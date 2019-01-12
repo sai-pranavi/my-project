@@ -1,0 +1,65 @@
+---
+- hosts: web
+  tasks:
+   - name: Update and upgrade apt packages
+     become: true
+     apt:
+       upgrade: yes
+       update_cache: yes
+       cache_valid_time: 86400 #One day
+   - name: Update repositories cache and install "build-essential" package
+     become: true
+     apt:
+       name: build-essential
+       update_cache: yes
+   - name: Update repositories cache and install "libssl-dev" package
+     become: true
+     apt:
+       name: libssl-dev
+       update_cache: yes
+   - name: nvm
+     shell: >
+       curl https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+   - name: add the GPG key for the official Docker
+     shell: >
+       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   - name: add apt repository
+     shell: >
+       sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+   - name: Update and upgrade apt packages
+     become: true
+     apt:
+       upgrade: yes
+       update_cache: yes
+       cache_valid_time: 86400 #One day
+   - name: about to install from the Docker repo
+     shell: >
+       apt-cache policy docker-ce
+
+   - name: install docker
+     become: true
+     apt:
+       name: docker-ce
+  # - name: install docker
+   #  become: true
+    # shell: >
+     - name: install docker compose
+     shell: >
+       sudo curl -L "https://github.com/docker/compose/releases/download/1.13/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+   - name: update openssl for heartbleed
+     shell: >
+       sudo apt-get install --only-upgrade openssl
+
+   - name: Update and upgrade apt packages
+     become: true
+     apt:
+       upgrade: yes
+       update_cache: yes
+   - name: install git
+     become: true
+     apt:
+       name: git-core
+       state: latest
+...
+                                                                                       
